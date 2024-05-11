@@ -80,7 +80,83 @@ describe('UsersService', () => {
     expect(result).toEqual(users);
     expect(mockUserRepository.find).toBeCalled();
   });
-  it('findOne', () => {});
-  it('update', () => {});
-  it('remove', () => {});
+
+
+  it('findOne => should find a user by a given id and return its data', async() => {
+    //arrange 
+    const id = 1;
+    const user = {
+      id,
+      firstname: 'Chadwick',
+      lastname: 'Boseman',
+      email: 'chadwickboseman@email.com'
+    }
+
+    jest.spyOn(mockUserRepository, 'findOne').mockReturnValue(user);
+
+    //act
+    const result = await service.findOne(id);
+
+    //assert
+    expect(result).toEqual(user);
+    expect(mockUserRepository.findOne).toBeCalled();
+    expect(mockUserRepository.findOne).toBeCalledWith({where:{id}});
+
+  });
+  it('update=> should find a user given by id and update the data given', async() => {
+    //arrange
+    const id = 1;
+    const updateUserDto = {
+      firstname: 'Chadwick',
+      lastname: 'Boseman',
+      email: 'chadwickboseman@email.com'
+    } as CreateUserDto;
+
+    const user = {
+      id,
+      ...updateUserDto
+    } as User;
+
+    jest.spyOn(mockUserRepository, 'findOne').mockReturnValue(user);
+    jest.spyOn(mockUserRepository, 'save').mockReturnValue(user);
+
+    //act
+    const result = await service.update(id, updateUserDto);
+
+    //assert
+    expect(result).toEqual(user);
+    expect(mockUserRepository.findOne).toBeCalled();
+    expect(mockUserRepository.findOne).toBeCalledWith({where:{id}});
+    expect(mockUserRepository.save).toBeCalled();
+    expect(mockUserRepository.save).toBeCalledWith(user);
+  }
+  );
+
+  it('remove=> should find a user given by id and delete it', async() => {
+    //arrange
+    const id = 1;
+    const user = {
+      id,
+      firstname: 'Chadwick',
+      lastname: 'Boseman',
+      email: 'chadwickboseman@gmail.com'
+    } as User;
+
+    jest.spyOn(mockUserRepository, 'findOne').mockReturnValue(user);
+    jest.spyOn(mockUserRepository, 'delete').mockReturnValue({affected: 1});
+
+
+    //act
+    const result = await service.remove(id);
+
+    //assert
+    //expect(result).toEqual({message: 'User deleted successfully'});
+    expect(mockUserRepository.findOne).toBeCalled();
+    expect(mockUserRepository.findOne).toBeCalledWith({where:{id}});
+    expect(mockUserRepository.delete).toBeCalled();
+    expect(mockUserRepository.delete).toBeCalledWith(id);
+  }
+  );
+
 });
+  
